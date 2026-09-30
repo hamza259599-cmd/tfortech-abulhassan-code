@@ -1,4 +1,3 @@
-
 /* =========================================================
    TFORTECH - ADMIN USER MANAGEMENT
 ========================================================= */
@@ -216,6 +215,11 @@
   color: #ea580c;
 }
 
+.admin-users-summary-icon.admin {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
 .admin-users-summary-icon.super-admin {
   background: #f5f3ff;
   color: #7c3aed;
@@ -241,6 +245,213 @@
   font-weight: 800;
 
   line-height: 1;
+}
+
+
+/* =========================================================
+   ADD ADMIN / CO ADMIN BY CREDENTIALS
+========================================================= */
+
+.admin-users-credentials-card {
+  overflow: hidden;
+
+  margin-bottom: 24px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5eaf1;
+  border-radius: 15px;
+
+  box-shadow:
+    0 6px 22px rgba(15, 23, 42, 0.045);
+}
+
+.admin-users-credentials-card
+  .admin-users-card-heading {
+  border-bottom: 1px solid #edf1f6;
+}
+
+.admin-users-credentials-form {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    minmax(0, 190px)
+    auto;
+
+  align-items: end;
+
+  gap: 18px;
+
+  padding: 22px 24px 24px;
+}
+
+.admin-users-form-group {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.admin-users-form-group label {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 750;
+
+  line-height: 1.4;
+}
+
+.admin-users-form-group label svg {
+  flex-shrink: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.admin-users-form-group input,
+.admin-users-form-group select {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+  color: #334155;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+
+  outline: none;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.admin-users-form-group input::placeholder {
+  color: #94a3b8;
+
+  font-weight: 500;
+}
+
+.admin-users-form-group input:hover:not(:disabled),
+.admin-users-form-group select:hover:not(:disabled) {
+  background: #fbfcfe;
+  border-color: #b9c4d2;
+}
+
+.admin-users-form-group input:focus,
+.admin-users-form-group select:focus {
+  background: #ffffff;
+
+  border-color: #60a5fa;
+
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.admin-users-form-group input:disabled,
+.admin-users-form-group select:disabled {
+  background: #f8fafc;
+
+  cursor: not-allowed;
+
+  opacity: 0.7;
+}
+
+.admin-users-form-group select {
+  padding-right: 32px;
+
+  cursor: pointer;
+
+  appearance: auto;
+}
+
+.admin-users-credentials-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.admin-users-credentials-button {
+  min-width: 145px;
+  height: 42px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 16px;
+
+  background: #3b82f6;
+  color: #ffffff;
+
+  border: 1px solid #3b82f6;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 14px rgba(59, 130, 246, 0.18);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.admin-users-credentials-button:hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 18px rgba(59, 130, 246, 0.24);
+}
+
+.admin-users-credentials-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.admin-users-credentials-button:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.65;
+
+  box-shadow: none;
+}
+
+.admin-users-credentials-button svg {
+  flex-shrink: 0;
+
+  font-size: 13px;
 }
 
 
@@ -592,6 +803,13 @@
   white-space: nowrap;
 }
 
+.admin-users-role-badge.admin {
+  background: #f5f3ff;
+  color: #6d28d9;
+
+  border: 1px solid #ddd6fe;
+}
+
 .admin-users-role-badge.super-admin {
   background: #f5f3ff;
   color: #6d28d9;
@@ -902,6 +1120,11 @@
   border: 1px solid;
 }
 
+.admin-users-role-info-card.admin {
+  background: #faf8ff;
+  border-color: #e9ddff;
+}
+
 .admin-users-role-info-card.super-admin {
   background: #faf8ff;
   border-color: #e9ddff;
@@ -930,6 +1153,12 @@
   border-radius: 10px;
 
   font-size: 16px;
+}
+
+.admin-users-role-info-card.admin
+  .admin-users-role-info-icon {
+  background: #ede9fe;
+  color: #6d28d9;
 }
 
 .admin-users-role-info-card.super-admin
@@ -1063,6 +1292,17 @@
   .admin-users-role-info-grid {
     grid-template-columns: 1fr;
   }
+
+  .admin-users-credentials-form {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-users-credentials-actions {
+    grid-column: 1 / -1;
+
+    justify-content: flex-start;
+  }
 }
 
 
@@ -1101,6 +1341,22 @@
 
   .admin-users-summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .admin-users-credentials-form {
+    grid-template-columns: 1fr;
+
+    padding: 20px;
+  }
+
+  .admin-users-credentials-actions {
+    grid-column: auto;
+
+    width: 100%;
+  }
+
+  .admin-users-credentials-button {
+    width: 100%;
   }
 
   .admin-users-role-info {
@@ -1151,6 +1407,21 @@
 
   .admin-users-card-heading {
     padding: 18px;
+  }
+
+  .admin-users-credentials-form {
+    gap: 15px;
+
+    padding: 18px;
+  }
+
+  .admin-users-form-group input,
+  .admin-users-form-group select {
+    height: 40px;
+  }
+
+  .admin-users-credentials-button {
+    height: 40px;
   }
 
   .admin-users-role-info-header h2 {

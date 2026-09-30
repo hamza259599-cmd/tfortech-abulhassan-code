@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel
 
 from database import orders_collection, users_collection
 
@@ -32,6 +33,25 @@ router = APIRouter(
     prefix="/api/auth",
     tags=["Authentication"],
 )
+
+
+# =========================================================
+# ADMIN USER CREDENTIAL ROLE UPDATE MODEL
+# =========================================================
+
+class AdminUserCredentialsRoleUpdate(BaseModel):
+    """
+    Verify a target user's email and password, then assign
+    the selected administrative role.
+
+    Supported target roles:
+    - admin
+    - co_admin
+    """
+
+    email: str
+    password: str
+    role: str
 
 
 # =========================================================
@@ -1036,6 +1056,163 @@ def update_user_role(
                 True,
             )
         ),
+    }
+
+
+# =========================================================
+# ADMIN USERS - UPDATE ROLE BY EMAIL + PASSWORD
+# =========================================================
+
+@router.put(
+    "/admin/users/role-by-credentials",
+)
+def update_user_role_by_credentials(
+    role_update: AdminUserCredentialsRoleUpdate,
+    current_admin=Depends(get_current_admin),
+):
+    """
+    Verify another user's email and password, then assign
+    either admin or co_admin role.
+
+    Only the main admin can use this endpoint.
+
+    The target user's password is never stored or modified.
+    It is only verified against the existing password hash.
+    """
+
+    normalized_email = str(
+        role_update.email
+        or ""
+    ).strip().lower()
+
+    provided_password = str(
+        role_update.password
+        or ""
+    )
+
+    new_role = str(
+        role_update.role
+        or ""
+    ).strip().lower()
+
+    if new_role not in {
+        "admin",
+        "co_admin",
+    }:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only admin or co_admin roles can be assigned here.",
+        )
+
+    if not normalized_email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email is required.",
+        )
+
+    if not provided_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password is required.",
+        )
+
+    existing_user = users_collection.find_one(
+        {
+            "email": normalized_email,
+        }
+    )
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
+        )
+
+    password_hash = existing_user.get(
+        "password"
+    )
+
+    if not password_hash:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
+        )
+
+    if not verify_password(
+        provided_password,
+        password_hash,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
+        )
+
+    if existing_user["_id"] == current_admin["_id"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot change your own role through this form.",
+        )
+
+    users_collection.update_one(
+        {
+            "_id": existing_user["_id"],
+        },
+        {
+            "$set": {
+                "role": new_role,
+                "updated_at": datetime.now(timezone.utc),
+            }
+        },
+    )
+
+    updated_user = users_collection.find_one(
+        {
+            "_id": existing_user["_id"],
+        }
+    )
+
+    if not updated_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found after role update.",
+        )
+
+    return {
+        "success": True,
+        "message": (
+            "User role updated successfully."
+        ),
+        "user": {
+            "id": str(updated_user["_id"]),
+            "full_name": str(
+                updated_user.get(
+                    "full_name",
+                    "",
+                )
+                or ""
+            ),
+            "email": str(
+                updated_user.get(
+                    "email",
+                    "",
+                )
+                or ""
+            ),
+            "phone": str(
+                updated_user.get(
+                    "phone",
+                    "",
+                )
+                or ""
+            ),
+            "role": get_user_role(updated_user),
+            "is_active": bool(
+                updated_user.get(
+                    "is_active",
+                    True,
+                )
+            ),
+        },
     }
 
 
