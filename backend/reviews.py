@@ -1,3 +1,4 @@
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -47,15 +48,18 @@ reviews_collection = (
 BASE_DIR = Path(__file__).resolve().parent
 
 UPLOAD_DIR = (
-    BASE_DIR
+    Path(tempfile.gettempdir())
     / "uploads"
     / "customer_reviews"
 )
 
-UPLOAD_DIR.mkdir(
-    parents=True,
-    exist_ok=True,
-)
+try:
+    UPLOAD_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+except OSError:
+    pass
 
 
 ALLOWED_VIDEO_TYPES = {
@@ -900,4 +904,4 @@ def delete_review(
             "Customer review "
             "deleted successfully."
         ),
-    }
+        }
