@@ -1432,3 +1432,48 @@
     padding: 15px;
   }
 }
+
+/* =========================================================
+   DELETE USER BUTTON
+========================================================= */
+
+.admin-users-delete-button {
+  min-height: 36px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-left: 8px;
+  padding: 0 11px;
+
+  border-radius: 8px;
+  border: 1px solid #ef4444;
+
+  background: #ef4444;
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-users-delete-button:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+
+  transform: translateY(-1px);
+}
+
+.admin-users-delete-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
