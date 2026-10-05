@@ -16,6 +16,7 @@ import {
   FaArrowLeft,
   FaKey,
   FaEnvelope,
+  FaTrashAlt,
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
@@ -487,6 +488,129 @@ const AdminUsers = () => {
       setError(
         err.message ||
           "Failed to update account status."
+      );
+    } finally {
+      setSavingUserId(null);
+    }
+  };
+
+
+  const deleteUser = async (
+    userId,
+    userName
+  ) => {
+    const token =
+      localStorage.getItem(
+        "tfortech_access_token"
+      );
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    if (
+      normalizedCurrentRole !==
+      "admin"
+    ) {
+      setError(
+        "You do not have permission to delete users."
+      );
+
+      return;
+    }
+
+    if (
+      userId === currentUserId
+    ) {
+      setActionMessage(
+        "You cannot delete your own account."
+      );
+
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        `Delete ${userName || "this user"} permanently? This cannot be undone.`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setSavingUserId(userId);
+
+      setError("");
+
+      setActionMessage("");
+
+      const response = await fetch(
+        `${API_URL}/api/auth/admin/users/${userId}`,
+        {
+          method: "DELETE",
+
+          headers: {
+            Accept:
+              "application/json",
+
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (
+        response.status === 401
+      ) {
+        clearLoginSession();
+
+        navigate("/login");
+
+        return;
+      }
+
+      if (
+        response.status === 403
+      ) {
+        setError(
+          "You do not have permission to delete users."
+        );
+
+        return;
+      }
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.detail ||
+            "Failed to delete user."
+        );
+      }
+
+      setUsers(
+        (currentUsers) =>
+          currentUsers.filter(
+            (user) =>
+              user.id !== userId
+          )
+      );
+
+      setActionMessage(
+        `${userName || "User"} has been deleted.`
+      );
+    } catch (err) {
+      console.error(
+        "Delete user error:",
+        err
+      );
+
+      setError(
+        err.message ||
+          "Failed to delete user."
       );
     } finally {
       setSavingUserId(null);
@@ -1457,6 +1581,31 @@ const AdminUsers = () => {
                                   </>
 
                                 )}
+
+                              </button>
+
+                            )}
+
+                            {!isCurrentUser && (
+
+                              <button
+                                type="button"
+                                className="admin-users-delete-button"
+                                onClick={() =>
+                                  deleteUser(
+                                    user.id,
+                                    user.full_name ||
+                                      user.email
+                                  )
+                                }
+                                disabled={
+                                  isSaving
+                                }
+                                title="Delete user"
+                              >
+
+                                <FaTrashAlt />
+                                Delete
 
                               </button>
 
