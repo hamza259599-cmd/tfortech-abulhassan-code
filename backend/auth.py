@@ -1325,3 +1325,69 @@ def update_user_status(
             )
         ),
     }
+
+# =========================================================
+# ADMIN USERS - DELETE USER
+# =========================================================
+
+@router.delete(
+    "/admin/users/{user_id}",
+)
+def delete_user(
+    user_id: str,
+    current_admin=Depends(get_current_admin),
+):
+    """
+    Permanently delete another user account.
+
+    Only the main admin can delete users.
+    The admin cannot delete their own account.
+    Existing orders are kept for business records.
+    """
+
+    try:
+        from bson import ObjectId
+
+        object_id = ObjectId(user_id)
+
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid user ID.",
+        )
+
+    if object_id == current_admin["_id"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot delete your own account.",
+        )
+
+    existing_user = users_collection.find_one(
+        {
+            "_id": object_id,
+        }
+    )
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found.",
+        )
+
+    result = users_collection.delete_one(
+        {
+            "_id": object_id,
+        }
+    )
+
+    if result.deleted_count != 1:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User could not be deleted.",
+        )
+
+    return {
+        "success": True,
+        "message": "User deleted successfully.",
+        "user_id": user_id,
+    }
