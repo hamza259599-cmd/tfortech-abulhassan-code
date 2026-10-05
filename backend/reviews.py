@@ -52,10 +52,23 @@ UPLOAD_DIR = (
     / "customer_reviews"
 )
 
-UPLOAD_DIR.mkdir(
-    parents=True,
-    exist_ok=True,
-)
+try:
+    UPLOAD_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+except OSError:
+    # Vercel's filesystem is read-only except /tmp
+    UPLOAD_DIR = (
+        Path("/tmp")
+        / "uploads"
+        / "customer_reviews"
+    )
+
+    UPLOAD_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
 
 ALLOWED_VIDEO_TYPES = {
