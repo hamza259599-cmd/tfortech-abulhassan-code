@@ -6,7 +6,7 @@ from bson import ObjectId
 from pymongo.errors import PyMongoError
 
 from database import products_collection
-from auth import get_current_product_order_admin
+from access import require_section
 
 
 router = APIRouter(
@@ -434,7 +434,7 @@ def get_product(
 def create_product(
     product: ProductCreate,
     current_admin=Depends(
-        get_current_product_order_admin
+        require_section("products")
     ),
 ):
     try:
@@ -512,7 +512,7 @@ def update_product(
     product_id: str,
     product: ProductUpdate,
     current_admin=Depends(
-        get_current_product_order_admin
+        require_section("products")
     ),
 ):
     if not ObjectId.is_valid(product_id):
@@ -648,7 +648,7 @@ def update_product(
 def delete_product(
     product_id: str,
     current_admin=Depends(
-        get_current_product_order_admin
+        require_section("products")
     ),
 ):
     if not ObjectId.is_valid(product_id):
@@ -699,7 +699,7 @@ def update_product_stock(
     product_id: str,
     stock: int,
     current_admin=Depends(
-        get_current_product_order_admin
+        require_section("products")
     ),
 ):
     if not ObjectId.is_valid(product_id):

@@ -507,7 +507,7 @@ function Navbar() {
     );
 
     localStorage.removeItem(
-      "tfortech_remember_me"
+      "tfortech_user_permissions"); localStorage.removeItem("tfortech_remember_me"
     );
 
     setIsLoggedIn(false);

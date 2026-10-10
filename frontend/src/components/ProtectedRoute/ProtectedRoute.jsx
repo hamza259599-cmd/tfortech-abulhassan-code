@@ -1,10 +1,13 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
+import { can, canOpenAdminPanel } from "../../access";
+
 const ProtectedRoute = ({
   children,
   adminOnly = false,
   allowedRoles = null,
+  section = null,
 }) => {
   const isLoggedIn =
     localStorage.getItem("tfortech_logged_in") === "true";
@@ -36,6 +39,20 @@ const ProtectedRoute = ({
     !allowedRoles.includes(userRole)
   ) {
     return <Navigate to="/" replace />;
+  }
+
+  /*
+    A Co Admin only reaches a section the Admin granted them. An Admin
+    passes every check. The backend refuses the same requests, so this
+    just avoids showing a page that would fail anyway.
+  */
+  if (section && !can(section)) {
+    return (
+      <Navigate
+        to={canOpenAdminPanel() ? "/admin/products" : "/"}
+        replace
+      />
+    );
   }
 
   return children;

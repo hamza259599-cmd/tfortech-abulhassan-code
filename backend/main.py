@@ -8,7 +8,7 @@ from whatsapp import router as whatsapp_router
 from theme import router as theme_router
 from reviews import router as reviews_router
 from header_footer import router as header_footer_router
-from blogs import router as blogs_router
+from blogs import router as blogs_router; from access import router as access_router
 
 from config import APP_NAME, FRONTEND_URL, FRONTEND_URLS, PORT
 from database import test_database_connection
@@ -72,7 +72,7 @@ app.include_router(reviews_router)
 app.include_router(header_footer_router)
 
 # Blogging
-app.include_router(blogs_router)
+app.include_router(blogs_router); app.include_router(access_router)
 
 
 # ============================================================

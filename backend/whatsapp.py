@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 
-from auth import get_current_admin
+from access import require_section
 from database import db
 
 
@@ -317,7 +317,7 @@ def get_public_whatsapp_settings():
 @router.put("/settings")
 def update_whatsapp_settings(
     settings_data: WhatsAppSettingsUpdate,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("whatsapp")),
 ):
     """
     Admin-only endpoint for saving WhatsApp settings.
@@ -435,7 +435,7 @@ def update_whatsapp_settings(
 
 @router.post("/settings/reset")
 def reset_whatsapp_settings(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("whatsapp")),
 ):
     """
     Admin-only endpoint to reset WhatsApp settings

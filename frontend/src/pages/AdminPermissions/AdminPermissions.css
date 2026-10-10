@@ -1,0 +1,168 @@
+.perm-page {
+  padding: 28px;
+  color: #e8eef8;
+  background: #071426;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.perm-page h1 {
+  margin-bottom: 8px;
+}
+
+.perm-page > p {
+  color: #a8b7cc;
+  overflow-wrap: anywhere;
+  margin-top: 0;
+}
+
+.perm-card {
+  background: #0d2038;
+  border: 1px solid #233c59;
+  border-radius: 14px;
+  padding: 22px;
+  margin: 22px 0;
+}
+
+.perm-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.perm-card .perm-sub {
+  color: #a8b7cc;
+  font-size: 13px;
+  margin: 0 0 16px;
+}
+
+.perm-note {
+  background: #10263f;
+  border: 1px solid #2c4663;
+  border-left: 3px solid #1478f8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #c3d2e6;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.perm-user {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #29415c;
+  flex-wrap: wrap;
+}
+
+.perm-user:last-of-type {
+  border-bottom: none;
+}
+
+.perm-user .who strong {
+  font-size: 15px;
+}
+
+.perm-user .who div {
+  color: #a8b7cc;
+  font-size: 12.5px;
+  margin-top: 3px;
+}
+
+.perm-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  margin-left: 8px;
+}
+
+.perm-badge.admin {
+  background: #1478f81f;
+  color: #6fb0ff;
+}
+
+.perm-badge.co {
+  background: #22c55e1f;
+  color: #68d99a;
+}
+
+.perm-badge.customer {
+  background: #8b93a11f;
+  color: #a8b7cc;
+}
+
+.perm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.perm-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  background: #102843;
+  border: 1px solid #23405f;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.perm-item:hover {
+  border-color: #35506d;
+}
+
+.perm-item input {
+  margin: 0;
+}
+
+.perm-page button {
+  margin: 12px 8px 0 0;
+  padding: 10px 15px;
+  background: #1478f8;
+  color: white;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.perm-page button.ghost {
+  background: transparent;
+  border: 1px solid #35506d;
+  color: #c3d2e6;
+}
+
+.perm-page button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.perm-status {
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+.perm-status.ok {
+  color: #68d99a;
+}
+
+.perm-status.err {
+  color: #ff8b8b;
+}
+
+@media (max-width: 600px) {
+  .perm-page {
+    padding: 14px;
+  }
+
+  .perm-user {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

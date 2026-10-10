@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from auth import get_current_admin
+from access import require_section
 from database import blogs_collection
 from schemas import BlogCreate, BlogResponse, BlogUpdate
 
@@ -173,7 +173,7 @@ def get_public_blog(
     "/admin",
 )
 def get_admin_blogs(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("blog")),
 ):
     blogs = list(
         blogs_collection.find().sort(
@@ -200,7 +200,7 @@ def get_admin_blogs(
 )
 def get_admin_blog(
     blog_id: str,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("blog")),
 ):
     try:
         object_id = ObjectId(blog_id)
@@ -238,7 +238,7 @@ def get_admin_blog(
 )
 def create_blog(
     blog_data: BlogCreate,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("blog")),
 ):
     title = blog_data.title.strip()
 
@@ -358,7 +358,7 @@ def create_blog(
 def update_blog(
     blog_id: str,
     blog_data: BlogUpdate,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("blog")),
 ):
     try:
         object_id = ObjectId(blog_id)
@@ -563,7 +563,7 @@ def update_blog(
 )
 def delete_blog(
     blog_id: str,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("blog")),
 ):
     try:
         object_id = ObjectId(blog_id)

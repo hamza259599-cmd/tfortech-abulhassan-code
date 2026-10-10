@@ -48,7 +48,7 @@ const Orders = () => {
     localStorage.removeItem("tfortech_user_name");
     localStorage.removeItem("tfortech_user_email");
     localStorage.removeItem("tfortech_user_phone");
-    localStorage.removeItem("tfortech_user_role");
+    localStorage.removeItem("tfortech_user_role"); localStorage.removeItem("tfortech_user_permissions");
     localStorage.removeItem("tfortech_remember_me");
 
     sessionStorage.removeItem(

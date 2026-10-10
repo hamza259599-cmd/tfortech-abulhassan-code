@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
-from database import orders_collection, users_collection
+from database import orders_collection, users_collection; from access import require_section
 
 from schemas import (
     AdminUserRoleUpdate,
@@ -609,7 +609,7 @@ def get_my_orders(
 )
 def get_all_orders(
     current_admin=Depends(
-        get_current_product_order_admin
+        require_section("orders")
     ),
 ):
     """
@@ -689,7 +689,7 @@ def update_order_status(
     order_id: str,
     new_status: str,
     current_admin=Depends(
-        get_current_product_order_admin
+        require_section("orders")
     ),
 ):
     """

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 
-from auth import get_current_admin
+from access import require_section
 from database import db
 
 
@@ -245,7 +245,7 @@ def get_public_theme():
 
 @router.get("/settings")
 def get_theme_settings(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("theme")),
 ):
     """
     Admin-only theme settings endpoint.
@@ -275,7 +275,7 @@ def get_theme_settings(
 @router.put("/settings")
 def update_theme_settings(
     theme_data: ThemeSettingsUpdate,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("theme")),
 ):
     """
     Save theme settings.
@@ -359,7 +359,7 @@ def update_theme_settings(
 
 @router.post("/settings/reset")
 def reset_theme_settings(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("theme")),
 ):
     """
     Restore the complete default theme.

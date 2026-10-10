@@ -14,7 +14,7 @@ from fastapi import (
 )
 from fastapi.responses import FileResponse
 
-from auth import get_current_admin
+from access import require_section
 from database import users_collection
 
 
@@ -500,7 +500,7 @@ def get_review_video(
 def get_admin_reviews(
     request: Request,
     current_admin=Depends(
-        get_current_admin
+        require_section("reviews")
     ),
 ):
     """
@@ -548,7 +548,7 @@ async def create_review(
     is_active: bool = Form(True),
     video: UploadFile = File(...),
     current_admin=Depends(
-        get_current_admin
+        require_section("reviews")
     ),
 ):
     """
@@ -684,7 +684,7 @@ async def update_review(
     is_active: bool = Form(True),
     video: UploadFile | None = File(None),
     current_admin=Depends(
-        get_current_admin
+        require_section("reviews")
     ),
 ):
     """
@@ -854,7 +854,7 @@ async def update_review(
 def delete_review(
     review_id: str,
     current_admin=Depends(
-        get_current_admin
+        require_section("reviews")
     ),
 ):
     """
