@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 
-from auth import get_current_admin
+from access import require_section
 from database import db
 
 
@@ -447,7 +447,7 @@ def get_public_header_footer():
 
 @router.get("/settings")
 def get_header_footer_settings(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("header_footer")),
 ):
     try:
         settings = get_or_create_header_footer()
@@ -473,7 +473,7 @@ def get_header_footer_settings(
 @router.put("/settings")
 def update_header_footer_settings(
     settings_data: HeaderFooterSettingsUpdate,
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("header_footer")),
 ):
     now = datetime.now(timezone.utc)
 
@@ -639,7 +639,7 @@ def update_header_footer_settings(
 
 @router.post("/settings/reset")
 def reset_header_footer_settings(
-    current_admin=Depends(get_current_admin),
+    current_admin=Depends(require_section("header_footer")),
 ):
     now = datetime.now(timezone.utc)
 
