@@ -32,6 +32,7 @@ import AdminTheme from "./pages/AdminTheme/AdminTheme";
 import AdminReviews from "./pages/AdminReviews/AdminReviews";
 import AdminHero from "./pages/AdminHero/AdminHero";
 import AdminUsers from "./pages/AdminUsers/AdminUsers";
+import AdminPermissions from "./pages/AdminPermissions/AdminPermissions";
 import AdminHeaderFooter from "./pages/AdminHeaderFooter/AdminHeaderFooter";
 import AdminBlogging from "./pages/AdminBlogging/AdminBlogging";
 
@@ -232,6 +233,7 @@ function App() {
                 path="/admin"
                 element={
                   <ProtectedRoute
+                    section="dashboard"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -245,6 +247,7 @@ function App() {
                 path="/admin/dashboard"
                 element={
                   <ProtectedRoute
+                    section="dashboard"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -264,6 +267,7 @@ function App() {
                 path="/admin/products"
                 element={
                   <ProtectedRoute
+                    section="products"
                     allowedRoles={[
                       "admin",
                       "co_admin",
@@ -284,6 +288,7 @@ function App() {
                 path="/admin/hero"
                 element={
                   <ProtectedRoute
+                    section="hero"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -303,6 +308,7 @@ function App() {
                 path="/admin/orders"
                 element={
                   <ProtectedRoute
+                    section="orders"
                     allowedRoles={[
                       "admin",
                       "co_admin",
@@ -323,6 +329,7 @@ function App() {
                 path="/admin/reviews"
                 element={
                   <ProtectedRoute
+                    section="reviews"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -342,6 +349,7 @@ function App() {
                 path="/admin/whatsapp"
                 element={
                   <ProtectedRoute
+                    section="whatsapp"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -361,6 +369,7 @@ function App() {
                 path="/admin/theme"
                 element={
                   <ProtectedRoute
+                    section="theme"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -375,6 +384,17 @@ function App() {
                   ADMIN USERS / ADMIN MEMBERS
                   ADMIN ONLY
               ================================================== */}
+
+              <Route
+                path="/admin/permissions"
+                element={
+                  <ProtectedRoute
+                    allowedRoles={["admin"]}
+                  >
+                    <AdminPermissions />
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/admin/users"
@@ -399,6 +419,7 @@ function App() {
                 path="/admin/header-footer"
                 element={
                   <ProtectedRoute
+                    section="header_footer"
                     allowedRoles={[
                       "admin",
                     ]}
@@ -418,6 +439,7 @@ function App() {
                 path="/admin/blogging"
                 element={
                   <ProtectedRoute
+                    section="blog"
                     allowedRoles={[
                       "admin",
                     ]}
