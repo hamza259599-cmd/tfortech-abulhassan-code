@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   FaTachometerAlt,
@@ -17,12 +17,15 @@ import {
   FaEdit,
 } from "react-icons/fa";
 
+import { can, refreshPermissions } from "../../access";
+
 import Navbar from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
 
 import "./AdminLayout.css";
 
 const AdminLayout = ({ children }) => {
+  const [accessVersion, setAccessVersion] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,6 +47,19 @@ const AdminLayout = ({ children }) => {
     isAdmin ||
     isCoAdmin;
 
+  /*
+    Pull the latest section list from the server when the admin panel
+    opens, so a permission the Admin just changed takes effect without
+    the person signing out and back in.
+  */
+  useEffect(() => {
+    if (canAccessAdminPanel) {
+      refreshPermissions().then((info) => {
+        if (info) setAccessVersion((n) => n + 1);
+      });
+    }
+  }, [canAccessAdminPanel]);
+
   const handleLogout = () => {
     localStorage.removeItem("tfortech_logged_in");
     localStorage.removeItem("tfortech_access_token");
@@ -53,6 +69,7 @@ const AdminLayout = ({ children }) => {
     localStorage.removeItem("tfortech_user_email");
     localStorage.removeItem("tfortech_user_phone");
     localStorage.removeItem("tfortech_user_role");
+    localStorage.removeItem("tfortech_user_permissions");
     localStorage.removeItem("tfortech_remember_me");
 
     navigate("/login");
@@ -97,7 +114,7 @@ const AdminLayout = ({ children }) => {
 
             </div>
 
-            <nav className="admin-sidebar-nav">
+            <nav className="admin-sidebar-nav" key={accessVersion}>
 
               {/* ================= MAIN ================= */}
 
@@ -112,7 +129,7 @@ const AdminLayout = ({ children }) => {
                     DASHBOARD
                 ================================================= */}
 
-                {isAdmin && (
+                {can("dashboard") && (
                   <NavLink
                     to="/admin"
                     className={() =>
@@ -133,6 +150,7 @@ const AdminLayout = ({ children }) => {
                     ADMIN + CO ADMIN
                 ================================================= */}
 
+                {can("products") && (
                 <NavLink
                   to="/admin/products"
                   className={({ isActive }) =>
@@ -144,13 +162,14 @@ const AdminLayout = ({ children }) => {
                   <FaBoxOpen />
                   <span>Products</span>
                 </NavLink>
+                )}
 
                 {/* =================================================
                     HERO
                     ADMIN ONLY
                 ================================================= */}
 
-                {isAdmin && (
+                {can("hero") && (
                   <NavLink
                     to="/admin/hero"
                     className={({ isActive }) =>
@@ -169,6 +188,7 @@ const AdminLayout = ({ children }) => {
                     ADMIN + CO ADMIN
                 ================================================= */}
 
+                {can("orders") && (
                 <NavLink
                   to="/admin/orders"
                   className={({ isActive }) =>
@@ -180,13 +200,14 @@ const AdminLayout = ({ children }) => {
                   <FaShoppingCart />
                   <span>Orders</span>
                 </NavLink>
+                )}
 
                 {/* =================================================
                     CUSTOMER REVIEWS
                     ADMIN ONLY
                 ================================================= */}
 
-                {isAdmin && (
+                {can("reviews") && (
                   <NavLink
                     to="/admin/reviews"
                     className={({ isActive }) =>
@@ -205,7 +226,7 @@ const AdminLayout = ({ children }) => {
                     ADMIN ONLY
                 ================================================= */}
 
-                {isAdmin && (
+                {can("whatsapp") && (
                   <NavLink
                     to="/admin/whatsapp"
                     className={({ isActive }) =>
@@ -224,7 +245,7 @@ const AdminLayout = ({ children }) => {
                     ADMIN ONLY
                 ================================================= */}
 
-                {isAdmin && (
+                {can("theme") && (
                   <NavLink
                     to="/admin/theme"
                     className={({ isActive }) =>
@@ -243,7 +264,7 @@ const AdminLayout = ({ children }) => {
                     ADMIN ONLY
                 ================================================= */}
 
-                {isAdmin && (
+                {can("header_footer") && (
                   <NavLink
                     to="/admin/header-footer"
                     className={({ isActive }) =>
@@ -262,7 +283,7 @@ const AdminLayout = ({ children }) => {
                     ADMIN ONLY
                 ================================================= */}
 
-                {isAdmin && (
+                {can("blog") && (
                   <NavLink
                     to="/admin/blogging"
                     className={({ isActive }) =>
@@ -280,6 +301,20 @@ const AdminLayout = ({ children }) => {
                     ADMIN MEMBERS
                     ADMIN ONLY
                 ================================================= */}
+
+                {isAdmin && (
+                  <NavLink
+                    to="/admin/permissions"
+                    className={({ isActive }) =>
+                      `admin-nav-link ${
+                        isActive ? "active" : ""
+                      }`
+                    }
+                  >
+                    <FaUsers />
+                    <span>Section Access</span>
+                  </NavLink>
+                )}
 
                 {isAdmin && (
                   <NavLink
