@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; import { refreshPermissions } from "../../access";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -250,7 +250,7 @@ const Login = () => {
           : "false"
       );
 
-      navigate("/");
+      await refreshPermissions(); navigate("/");
     } catch (requestError) {
       console.error(
         "Login request error:",
