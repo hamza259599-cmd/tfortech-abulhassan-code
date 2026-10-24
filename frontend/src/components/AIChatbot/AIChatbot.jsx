@@ -33,6 +33,29 @@ const AGENT_MESSAGE = "Hello T For Tech, I want to talk to a real agent.";
 
 const COMPLAINT_EMAIL = "mhdee.technology@gmail.com";
 
+const COMPLAINT_BODY = [
+  "Assalam o Alaikum T For Tech Team,",
+  "",
+  "I want to register a complaint. My details are below:",
+  "",
+  "Full Name: ",
+  "Phone / WhatsApp: ",
+  "Order ID: ",
+  "Order Date: ",
+  "Product Name: ",
+  "",
+  "Problem Details:",
+  "(Please describe the issue here)",
+  "",
+  "What I want (Repair / Replacement / Refund): ",
+  "",
+  "I have attached photos/videos of the issue (if any).",
+  "",
+  "Please resolve this as soon as possible.",
+  "",
+  "Thank you.",
+].join("\n");
+
 /* ------------------------------------------------------------
    Render **bold**, [text](url) links and line breaks safely
 ------------------------------------------------------------ */
@@ -297,7 +320,7 @@ const AIChatbot = () => {
             ))}
             <a
               className="ai-chatbot-agent ai-chatbot-complaint"
-              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${COMPLAINT_EMAIL}&su=${encodeURIComponent("Complaint - T For Tech")}`}
+              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${COMPLAINT_EMAIL}&su=${encodeURIComponent("Complaint - T For Tech")}&body=${encodeURIComponent(COMPLAINT_BODY)}`}
               target="_blank"
               rel="noopener noreferrer"
               title={COMPLAINT_EMAIL}
