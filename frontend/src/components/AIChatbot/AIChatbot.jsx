@@ -98,8 +98,7 @@ const loadHistory = () => {
 const AIChatbot = () => {
   const location = useLocation();
 
-  const [enabled, setEnabled] = useState(false);
-  const [side, setSide] = useState("left");
+  const [online, setOnline] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
@@ -112,26 +111,24 @@ const AIChatbot = () => {
   useEffect(() => {
     let isMounted = true;
 
-    fetch(`${API_URL}/api/chat/status`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (isMounted && data?.enabled) {
-          setEnabled(true);
-        }
-      })
-      .catch(() => {});
+    const checkStatus = () => {
+      fetch(`${API_URL}/api/chat/status`)
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (isMounted) setOnline(Boolean(data?.enabled));
+        })
+        .catch(() => {
+          if (isMounted) setOnline(false);
+        });
+    };
 
-    fetch(`${API_URL}/api/whatsapp/public`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (!isMounted) return;
-        const whatsappPosition = data?.floating?.position;
-        setSide(whatsappPosition === "bottom-left" ? "right" : "left");
-      })
-      .catch(() => {});
+    checkStatus();
+    const statusTimer = setInterval(checkStatus, 60000);
+
 
     return () => {
       isMounted = false;
+      clearInterval(statusTimer);
     };
   }, []);
 
@@ -182,6 +179,8 @@ const AIChatbot = () => {
 
       const data = await response.json().catch(() => null);
 
+      setOnline(response.ok);
+
       const reply =
         response.ok && data?.reply
           ? data.reply
@@ -190,6 +189,7 @@ const AIChatbot = () => {
 
       setMessages((current) => [...current, { role: "assistant", content: reply }]);
     } catch (error) {
+      setOnline(false);
       setMessages((current) => [
         ...current,
         {
@@ -212,12 +212,12 @@ const AIChatbot = () => {
   };
 
   // Hide on admin pages and when backend isn't configured
-  if (!enabled || location.pathname.startsWith("/admin")) {
+  if (location.pathname.startsWith("/admin")) {
     return null;
   }
 
   return (
-    <div className={`ai-chatbot ai-chatbot-${side}`}>
+    <div className="ai-chatbot ai-chatbot-right">
       {isOpen && (
         <div className="ai-chatbot-window" role="dialog" aria-label="T For Tech AI assistant">
           <div className="ai-chatbot-header">
@@ -228,7 +228,8 @@ const AIChatbot = () => {
               <div>
                 <div className="ai-chatbot-title">T For Tech Assistant</div>
                 <div className="ai-chatbot-subtitle">
-                  <span className="ai-chatbot-dot" /> Online · AI powered
+                  <span className={`ai-chatbot-dot ${online ? "is-online" : "is-offline"}`} />{" "}
+                  {online ? "Online · AI powered" : "Offline · please use WhatsApp"}
                 </div>
               </div>
             </div>
@@ -296,8 +297,27 @@ const AIChatbot = () => {
         aria-label={isOpen ? "Close AI assistant" : "Open AI assistant"}
         title="Ask our AI assistant"
       >
-        {isOpen ? <FaTimes /> : <FaRobot />}
-        {!isOpen && <span className="ai-chatbot-toggle-label">Ask AI</span>}
+        {isOpen ? (
+          <FaTimes />
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+          </svg>
+        )}
+        <span
+          className={`ai-chatbot-status ${online ? "is-online" : "is-offline"}`}
+          title={online ? "Online" : "Offline"}
+        />
       </button>
     </div>
   );
