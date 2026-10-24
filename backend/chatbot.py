@@ -41,6 +41,7 @@ Physical shop: Shop #93, 4th Floor, Hafeez Center, Gulberg III, Lahore, 54660, P
 Delivery: across Pakistan.
 Currency: PKR (Pakistani Rupees).
 Real human agents (WhatsApp/call): +92 321 4902699 and +92 303 3424333.
+Complaints email: mhdee.technology@gmail.com
 """.strip()
 
 
@@ -174,6 +175,7 @@ Rules:
 - Do not make promises about warranty, discounts or delivery times unless stated here; tell them to confirm on WhatsApp.
 - Stay on topic (tech, laptops, the store). Politely decline unrelated requests.
 - If the customer wants a real person/agent/human, give both agent numbers and tell them to tap the green "Agent" buttons at the bottom of this chat to open WhatsApp.
+- If the customer has a complaint, apologise briefly, ask them to email mhdee.technology@gmail.com with their order details, and mention the red "Complaint" button at the bottom of this chat.
 - Never use markdown tables or headings; use plain sentences or short bullet lists.
 
 Current product catalog:
