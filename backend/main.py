@@ -9,6 +9,7 @@ from theme import router as theme_router
 from reviews import router as reviews_router
 from header_footer import router as header_footer_router
 from blogs import router as blogs_router
+from chatbot import router as chatbot_router
 
 from config import APP_NAME, FRONTEND_URL, FRONTEND_URLS, PORT
 from database import test_database_connection
@@ -73,6 +74,9 @@ app.include_router(header_footer_router)
 
 # Blogging
 app.include_router(blogs_router)
+
+# AI Chatbot
+app.include_router(chatbot_router)
 
 
 # ============================================================
