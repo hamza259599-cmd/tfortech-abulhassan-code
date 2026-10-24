@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaRobot, FaTimes, FaPaperPlane } from "react-icons/fa";
+import { FaRobot, FaTimes, FaPaperPlane, FaWhatsapp } from "react-icons/fa";
 
 import "./AIChatbot.css";
 
@@ -23,6 +23,13 @@ const QUICK_QUESTIONS = [
   "Shop location?",
   "How do I order?",
 ];
+
+const AGENTS = [
+  { label: "Agent 1", phone: "923214902699" },
+  { label: "Agent 2", phone: "923033424333" },
+];
+
+const AGENT_MESSAGE = "Hello T For Tech, I want to talk to a real agent.";
 
 /* ------------------------------------------------------------
    Render **bold**, [text](url) links and line breaks safely
@@ -272,6 +279,22 @@ const AIChatbot = () => {
                 ))}
               </div>
             )}
+          </div>
+
+          <div className="ai-chatbot-agents">
+            <span className="ai-chatbot-agents-label">Talk to a real agent:</span>
+            {AGENTS.map((agent) => (
+              <a
+                key={agent.phone}
+                className="ai-chatbot-agent"
+                href={`https://wa.me/${agent.phone}?text=${encodeURIComponent(AGENT_MESSAGE)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`WhatsApp +${agent.phone}`}
+              >
+                <FaWhatsapp /> {agent.label}
+              </a>
+            ))}
           </div>
 
           <form className="ai-chatbot-input" onSubmit={handleSubmit}>

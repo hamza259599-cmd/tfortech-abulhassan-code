@@ -448,3 +448,40 @@
     bottom: 66px;
   }
 }
+
+
+/* ---------- Real agent (WhatsApp) bar ---------- */
+
+.ai-chatbot-agents {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0b1222;
+}
+
+.ai-chatbot-agents-label {
+  color: #94a3b8;
+  font-size: 12px;
+  margin-right: 2px;
+}
+
+.ai-chatbot-agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 14px;
+  background: #25d366;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.ai-chatbot-agent:hover {
+  background: #20bd5a;
+  color: #ffffff;
+}
