@@ -297,7 +297,9 @@ const AIChatbot = () => {
             ))}
             <a
               className="ai-chatbot-agent ai-chatbot-complaint"
-              href={`mailto:${COMPLAINT_EMAIL}?subject=${encodeURIComponent("Complaint - T For Tech")}`}
+              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${COMPLAINT_EMAIL}&su=${encodeURIComponent("Complaint - T For Tech")}`}
+              target="_blank"
+              rel="noopener noreferrer"
               title={COMPLAINT_EMAIL}
             >
               <FaEnvelope /> Complaint
