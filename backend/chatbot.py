@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.request
@@ -278,6 +279,22 @@ def _call_gemini(messages: List[ChatMessage]) -> str:
 # FREE AI CALL (fallback, no key)
 # ============================================================
 
+URDU_SCRIPT = re.compile(r"[\u0600-\u06FF]")
+
+
+def _latin_hint(history: list) -> None:
+    """Free model tends to answer Roman Urdu in Urdu script; nudge it."""
+    if (
+        history
+        and history[-1]["role"] == "user"
+        and not URDU_SCRIPT.search(history[-1]["content"])
+    ):
+        history[-1]["content"] += (
+            "\n\n(Answer using English letters only. If I wrote Roman Urdu, "
+            "reply in Roman Urdu, never in Urdu script.)"
+        )
+
+
 def _call_free_ai(messages: List[ChatMessage]) -> str:
     history = [{"role": "system", "content": _system_prompt()}]
 
@@ -288,6 +305,8 @@ def _call_free_ai(messages: List[ChatMessage]) -> str:
                 "content": message.content[:MAX_MESSAGE_CHARS],
             }
         )
+
+    _latin_hint(history)
 
     payload = {
         "model": FREE_AI_MODEL,
