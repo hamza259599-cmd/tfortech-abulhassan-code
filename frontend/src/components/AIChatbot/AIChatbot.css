@@ -485,3 +485,11 @@
   background: #20bd5a;
   color: #ffffff;
 }
+
+.ai-chatbot-complaint {
+  background: #ef4444;
+}
+
+.ai-chatbot-complaint:hover {
+  background: #dc2626;
+}

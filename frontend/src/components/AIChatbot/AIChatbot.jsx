@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaRobot, FaTimes, FaPaperPlane, FaWhatsapp } from "react-icons/fa";
+import { FaRobot, FaTimes, FaPaperPlane, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 import "./AIChatbot.css";
 
@@ -30,6 +30,8 @@ const AGENTS = [
 ];
 
 const AGENT_MESSAGE = "Hello T For Tech, I want to talk to a real agent.";
+
+const COMPLAINT_EMAIL = "mhdee.technology@gmail.com";
 
 /* ------------------------------------------------------------
    Render **bold**, [text](url) links and line breaks safely
@@ -295,6 +297,13 @@ const AIChatbot = () => {
                 <FaWhatsapp /> {agent.label}
               </a>
             ))}
+            <a
+              className="ai-chatbot-agent ai-chatbot-complaint"
+              href={`mailto:${COMPLAINT_EMAIL}?subject=${encodeURIComponent("Complaint - T For Tech")}`}
+              title={COMPLAINT_EMAIL}
+            >
+              <FaEnvelope /> Complaint
+            </a>
           </div>
 
           <form className="ai-chatbot-input" onSubmit={handleSubmit}>
