@@ -7,6 +7,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import FloatingWhatsApp from "./components/FloatingWhatsApp/FloatingWhatsApp";
+import AIChatbot from "./components/AIChatbot/AIChatbot";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products/Products";
@@ -435,6 +436,9 @@ function App() {
             ========================== */}
 
             <FloatingWhatsApp />
+
+            {/* AI CHATBOT */}
+            <AIChatbot />
 
           </WishlistProvider>
         </CartProvider>
