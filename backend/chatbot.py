@@ -24,6 +24,10 @@ router = APIRouter(
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
 
+# Free fallback (no API key needed) used when GEMINI_API_KEY is not set
+FREE_AI_URL = os.getenv("FREE_AI_URL", "https://text.pollinations.ai/openai").strip()
+FREE_AI_MODEL = os.getenv("FREE_AI_MODEL", "openai").strip()
+
 MAX_HISTORY = 12
 MAX_MESSAGE_CHARS = 1000
 MAX_PRODUCTS_IN_CONTEXT = 200
@@ -167,6 +171,7 @@ Rules:
 - For ordering: add to cart and checkout on the website, or contact via WhatsApp.
 - Do not make promises about warranty, discounts or delivery times unless stated here; tell them to confirm on WhatsApp.
 - Stay on topic (tech, laptops, the store). Politely decline unrelated requests.
+- Never use markdown tables or headings; use plain sentences or short bullet lists.
 
 Current product catalog:
 {_build_catalog_text()}
@@ -268,6 +273,55 @@ def _call_gemini(messages: List[ChatMessage]) -> str:
 
 
 # ============================================================
+# FREE AI CALL (fallback, no key)
+# ============================================================
+
+def _call_free_ai(messages: List[ChatMessage]) -> str:
+    history = [{"role": "system", "content": _system_prompt()}]
+
+    for message in messages[-MAX_HISTORY:]:
+        history.append(
+            {
+                "role": message.role,
+                "content": message.content[:MAX_MESSAGE_CHARS],
+            }
+        )
+
+    payload = {
+        "model": FREE_AI_MODEL,
+        "messages": history,
+        "private": True,
+    }
+
+    request = urllib.request.Request(
+        FREE_AI_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "tfortech-chatbot/1.0",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=45) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except Exception as error:
+        print(f"Free AI request failed: {error}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Assistant is busy right now. Please try again in a moment.",
+        )
+
+    try:
+        reply = (data["choices"][0]["message"]["content"] or "").strip()
+    except (KeyError, IndexError, TypeError):
+        reply = ""
+
+    return reply or "Sorry, I couldn't answer that. Please contact us on WhatsApp."
+
+
+# ============================================================
 # ROUTES
 # ============================================================
 
@@ -275,19 +329,17 @@ def _call_gemini(messages: List[ChatMessage]) -> str:
 def chat_status():
     return {
         "success": True,
-        "enabled": bool(GEMINI_API_KEY),
+        "enabled": True,
+        "provider": "gemini" if GEMINI_API_KEY else "free",
     }
 
 
 @router.post("/")
 def chat(request: ChatRequest):
-    if not GEMINI_API_KEY:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="AI assistant is not configured yet.",
-        )
-
-    reply = _call_gemini(request.messages)
+    if GEMINI_API_KEY:
+        reply = _call_gemini(request.messages)
+    else:
+        reply = _call_free_ai(request.messages)
 
     return {
         "success": True,
