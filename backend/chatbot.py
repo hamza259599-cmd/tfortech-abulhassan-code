@@ -50,7 +50,7 @@ Complaints email: mhdee.technology@gmail.com
 # ============================================================
 
 _catalog_cache = {"text": "", "loaded_at": 0.0}
-CATALOG_TTL_SECONDS = 300
+CATALOG_TTL_SECONDS = 60
 
 
 def _format_price(value) -> str:
@@ -150,6 +150,174 @@ def _get_whatsapp_number() -> str:
         return ""
 
 
+# ============================================================
+# WHOLE WEBSITE DATA (auto refreshed, never breaks the chat)
+# ============================================================
+
+_site_cache = {"text": "", "loaded_at": 0.0}
+SITE_TTL_SECONDS = 60
+
+SITE_PAGES = """
+Website pages (use these links when helpful):
+- All products: /products
+- Categories (HP, Dell, Lenovo, MacBook): /categories
+- Blog: /blogging
+- Customer reviews: /reviews
+- About us: /about
+- Contact: /contact
+- Cart: /cart, Checkout: /checkout, Wishlist: /wishlist
+- My orders: /orders, My account: /account, Login: /login, Register: /register
+""".strip()
+
+
+def _clean(value, limit=200) -> str:
+    text = " ".join(str(value or "").split())
+    return text[:limit]
+
+
+def _site_section_categories() -> str:
+    counts = {}
+    for product in products_collection.find({}, {"category": 1}).limit(5000):
+        name = _clean(product.get("category"), 40) or "Other"
+        counts[name] = counts.get(name, 0) + 1
+    if not counts:
+        return ""
+    items = ", ".join(f"{name} ({count})" for name, count in sorted(counts.items()))
+    return f"Product categories (number of products): {items}"
+
+
+def _site_section_blogs() -> str:
+    blogs = (
+        db["blogs"]
+        .find(
+            {"is_published": True},
+            {"title": 1, "excerpt": 1, "category": 1},
+        )
+        .sort([("published_at", -1), ("created_at", -1)])
+        .limit(15)
+    )
+    lines = []
+    for blog in blogs:
+        title = _clean(blog.get("title"), 120)
+        if not title:
+            continue
+        line = f"- [{title}](/blogging/{blog['_id']})"
+        excerpt = _clean(blog.get("excerpt"), 160)
+        if excerpt:
+            line += f" | {excerpt}"
+        lines.append(line)
+    if not lines:
+        return ""
+    return "Latest blog posts:\n" + "\n".join(lines)
+
+
+def _site_section_reviews() -> str:
+    reviews = list(
+        db["customer_reviews"]
+        .find(
+            {"is_active": {"$ne": False}},
+            {"customer_name": 1, "review_text": 1, "rating": 1},
+        )
+        .limit(200)
+    )
+    if not reviews:
+        return ""
+    ratings = []
+    for review in reviews:
+        try:
+            ratings.append(float(review.get("rating", 5)))
+        except (TypeError, ValueError):
+            pass
+    average = sum(ratings) / len(ratings) if ratings else 0
+    lines = [
+        f"Customer reviews: {len(reviews)} reviews, average rating "
+        f"{average:.1f}/5 (see /reviews)."
+    ]
+    for review in reviews[:3]:
+        text = _clean(review.get("review_text"), 140)
+        if text:
+            lines.append(f'- {_clean(review.get("customer_name"), 40)}: "{text}"')
+    return "\n".join(lines)
+
+
+def _site_section_header_footer() -> str:
+    settings = db["header_footer_settings"].find_one({}) or {}
+    lines = []
+
+    header = settings.get("header") or {}
+    for key in ("announcement_text_1", "announcement_text_2"):
+        text = _clean(header.get(key), 150)
+        if text:
+            lines.append(f"Announcement: {text}")
+
+    footer = settings.get("footer") or {}
+    description = _clean(footer.get("description"), 250)
+    if description:
+        lines.append(f"About the store: {description}")
+
+    delivery = footer.get("delivery") or settings.get("delivery") or {}
+    for item in (delivery.get("items") or [])[:6]:
+        if isinstance(item, dict):
+            title = _clean(item.get("title"), 60)
+            detail = _clean(item.get("description"), 120)
+            if title:
+                lines.append(f"Service: {title}" + (f" - {detail}" if detail else ""))
+
+    social = settings.get("social_links") or footer.get("social_links") or {}
+    if isinstance(social, dict):
+        links = [
+            f"{name.title()}: {_clean(url, 150)}"
+            for name, url in social.items()
+            if isinstance(url, str) and url.startswith("http")
+        ]
+        if links:
+            lines.append("Social media: " + ", ".join(links))
+
+    return "\n".join(lines)
+
+
+def _site_section_hero() -> str:
+    hero = db["hero_settings"].find_one({}) or {}
+    title = _clean(hero.get("title"), 150)
+    description = _clean(hero.get("description"), 250)
+    if not title and not description:
+        return ""
+    return f"Homepage headline: {title}. {description}".strip()
+
+
+def _build_site_text() -> str:
+    now = time.time()
+
+    if (
+        _site_cache["text"]
+        and now - _site_cache["loaded_at"] < SITE_TTL_SECONDS
+    ):
+        return _site_cache["text"]
+
+    sections = [SITE_PAGES]
+
+    for builder in (
+        _site_section_hero,
+        _site_section_header_footer,
+        _site_section_categories,
+        _site_section_blogs,
+        _site_section_reviews,
+    ):
+        try:
+            text = builder()
+            if text:
+                sections.append(text)
+        except Exception as error:  # one bad section never breaks the chat
+            print(f"Chatbot site data error in {builder.__name__}: {error}")
+
+    text = "\n\n".join(sections)
+
+    _site_cache["text"] = text
+    _site_cache["loaded_at"] = now
+
+    return text
+
+
 def _system_prompt() -> str:
     whatsapp = _get_whatsapp_number()
     whatsapp_line = (
@@ -175,11 +343,15 @@ Rules:
 - Do not make promises about warranty, discounts or delivery times unless stated here; tell them to confirm on WhatsApp.
 - Stay on topic (tech, laptops, the store). Politely decline unrelated requests.
 - If the customer wants a real person/agent/human, give both agent numbers and tell them to tap the green "Agent" buttons at the bottom of this chat to open WhatsApp.
-- If the customer has a complaint, apologise briefly, ask them to email mhdee.technology@gmail.com with their order details, and mention the red "Complaint" button at the bottom of this chat.
+- If the customer has a complaint, apologise briefly and tell them to tap the red "Complaint" button at the bottom of this chat, fill the form and send it via Gmail (or email mhdee.technology@gmail.com directly).
+- Use the website information below to answer questions about pages, blog posts, reviews, services and announcements. Link pages and blog posts using the exact links given.
 - Never use markdown tables or headings; use plain sentences or short bullet lists.
 
 Current product catalog:
 {_build_catalog_text()}
+
+Website information:
+{_build_site_text()}
 """.strip()
 
 
