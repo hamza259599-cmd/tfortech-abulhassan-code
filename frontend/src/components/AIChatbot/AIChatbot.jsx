@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaRobot, FaTimes, FaPaperPlane, FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import { FaTimes, FaPaperPlane, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 import "./AIChatbot.css";
 
@@ -231,9 +231,7 @@ const AIChatbot = () => {
         <div className="ai-chatbot-window" role="dialog" aria-label="T For Tech AI assistant">
           <div className="ai-chatbot-header">
             <div className="ai-chatbot-header-info">
-              <span className="ai-chatbot-avatar">
-                <FaRobot />
-              </span>
+              <img className="ai-chatbot-avatar" src="/logo192.png" alt="T For Tech" />
               <div>
                 <div className="ai-chatbot-title">T For Tech Assistant</div>
                 <div className="ai-chatbot-subtitle">
