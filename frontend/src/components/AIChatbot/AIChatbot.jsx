@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaTimes, FaPaperPlane, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
+import ComplaintForm from "./ComplaintForm";
 import "./AIChatbot.css";
 
 const API_URL = (
@@ -32,29 +33,6 @@ const AGENTS = [
 const AGENT_MESSAGE = "Hello T For Tech, I want to talk to a real agent.";
 
 const COMPLAINT_EMAIL = "mhdee.technology@gmail.com";
-
-const COMPLAINT_BODY = [
-  "Assalam o Alaikum T For Tech Team,",
-  "",
-  "I want to register a complaint. My details are below:",
-  "",
-  "Full Name: ",
-  "Phone / WhatsApp: ",
-  "Order ID: ",
-  "Order Date: ",
-  "Product Name: ",
-  "",
-  "Problem Details:",
-  "(Please describe the issue here)",
-  "",
-  "What I want (Repair / Replacement / Refund): ",
-  "",
-  "I have attached photos/videos of the issue (if any).",
-  "",
-  "Please resolve this as soon as possible.",
-  "",
-  "Thank you.",
-].join("\n");
 
 /* ------------------------------------------------------------
    Render **bold**, [text](url) links and line breaks safely
@@ -132,6 +110,7 @@ const AIChatbot = () => {
 
   const [online, setOnline] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [showComplaint, setShowComplaint] = useState(false);
   const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -278,6 +257,10 @@ const AIChatbot = () => {
             </div>
           </div>
 
+          {showComplaint ? (
+            <ComplaintForm email={COMPLAINT_EMAIL} onBack={() => setShowComplaint(false)} />
+          ) : (
+          <>
           <div className="ai-chatbot-body" ref={bodyRef}>
             {messages.map((message, index) => (
               <div key={index} className={`ai-chatbot-msg ai-chatbot-msg-${message.role}`}>
@@ -318,15 +301,14 @@ const AIChatbot = () => {
                 <FaWhatsapp /> {agent.label}
               </a>
             ))}
-            <a
+            <button
+              type="button"
               className="ai-chatbot-agent ai-chatbot-complaint"
-              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${COMPLAINT_EMAIL}&su=${encodeURIComponent("Complaint - T For Tech")}&body=${encodeURIComponent(COMPLAINT_BODY)}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              onClick={() => setShowComplaint(true)}
               title={COMPLAINT_EMAIL}
             >
               <FaEnvelope /> Complaint
-            </a>
+            </button>
           </div>
 
           <form className="ai-chatbot-input" onSubmit={handleSubmit}>
@@ -342,6 +324,8 @@ const AIChatbot = () => {
               <FaPaperPlane />
             </button>
           </form>
+          </>
+          )}
         </div>
       )}
 

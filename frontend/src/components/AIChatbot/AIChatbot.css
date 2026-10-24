@@ -500,3 +500,112 @@ img.ai-chatbot-avatar {
   background: #000000;
   border: 1px solid rgba(14, 165, 233, 0.6);
 }
+
+.ai-chatbot-complaint {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ---------- Complaint form ---------- */
+
+.ai-complaint {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.ai-complaint-back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: #7dd3fc;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ai-complaint-title {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.ai-complaint-note {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ai-complaint-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-complaint-field span {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ai-complaint-field input,
+.ai-complaint-field textarea,
+.ai-complaint-field select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  color-scheme: dark;
+}
+
+.ai-complaint-field input:focus,
+.ai-complaint-field textarea:focus,
+.ai-complaint-field select:focus {
+  border-color: #0ea5e9;
+}
+
+.ai-complaint-error {
+  color: #fca5a5;
+  font-size: 12px;
+}
+
+.ai-complaint-success {
+  color: #86efac;
+  font-size: 12px;
+}
+
+.ai-complaint-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ai-complaint-submit:hover {
+  background: #dc2626;
+}
