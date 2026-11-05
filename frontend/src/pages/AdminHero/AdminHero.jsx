@@ -17,6 +17,7 @@ import {
 } from "react-icons/fa";
 
 import AdminLayout from "../AdminLayout/AdminLayout";
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 
 import "./AdminHero.css";
 
@@ -230,6 +231,11 @@ const AdminHero = () => {
   const [
     videoValidationLoading,
     setVideoValidationLoading,
+  ] = useState(false);
+
+  const [
+    imageUploading,
+    setImageUploading,
   ] = useState(false);
 
 
@@ -455,7 +461,7 @@ const AdminHero = () => {
      IMAGE GALLERY
   ========================================================== */
 
-  const handleGalleryImageChange = (event) => {
+  const handleGalleryImageChange = async (event) => {
     const file = event.target.files?.[0];
 
     if (!file) {
@@ -483,23 +489,21 @@ const AdminHero = () => {
       return;
     }
 
-    const reader = new FileReader();
+    setImageUploading(true);
 
-    reader.onload = () => {
-      if (
-        typeof reader.result !==
-        "string"
-      ) {
-        setError(
-          "Unable to process the selected image."
+    try {
+      const imageUrl =
+        await uploadToCloudinary(
+          file,
+          {
+            token: getToken(),
+            folder: "hero",
+          }
         );
-
-        return;
-      }
 
       setHero((previousHero) => ({
         ...previousHero,
-        image: reader.result,
+        image: imageUrl,
       }));
 
       setSelectedImageName(
@@ -507,15 +511,21 @@ const AdminHero = () => {
       );
 
       setImageSource("gallery");
-    };
-
-    reader.onerror = () => {
-      setError(
-        "Unable to read the selected image. Please try again."
+    } catch (uploadError) {
+      console.error(
+        "Hero image upload error:",
+        uploadError
       );
-    };
 
-    reader.readAsDataURL(file);
+      setError(
+        uploadError.message ||
+          "Unable to upload the selected image. Please try again."
+      );
+    } finally {
+      setImageUploading(false);
+
+      event.target.value = "";
+    }
   };
 
 
@@ -602,49 +612,36 @@ const AdminHero = () => {
         return;
       }
 
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        if (
-          typeof reader.result !==
-          "string"
-        ) {
-          setError(
-            "Unable to process the selected video."
-          );
-
-          return;
-        }
-
-        setHero((previousHero) => ({
-          ...previousHero,
-
-          video: reader.result,
-
-          /*
-            Selecting a valid video automatically enables it.
-          */
-          video_enabled: true,
-        }));
-
-        setSelectedVideoName(
-          file.name
+      const videoUrl =
+        await uploadToCloudinary(
+          file,
+          {
+            token: getToken(),
+            folder: "hero",
+            resourceType: "video",
+          }
         );
 
-        setVideoDuration(duration);
+      setHero((previousHero) => ({
+        ...previousHero,
 
-        setVideoSource("gallery");
+        video: videoUrl,
 
-        setPreviewMedia("video");
-      };
+        /*
+          Selecting a valid video automatically enables it.
+        */
+        video_enabled: true,
+      }));
 
-      reader.onerror = () => {
-        setError(
-          "Unable to read the selected video. Please try again."
-        );
-      };
+      setSelectedVideoName(
+        file.name
+      );
 
-      reader.readAsDataURL(file);
+      setVideoDuration(duration);
+
+      setVideoSource("gallery");
+
+      setPreviewMedia("video");
     } catch (videoError) {
       console.error(
         "Hero video validation error:",
@@ -956,6 +953,14 @@ const AdminHero = () => {
   const handleSave = async () => {
     if (getStoredUserRole() !== "admin") {
       navigate("/");
+      return;
+    }
+
+    if (imageUploading) {
+      setError(
+        "Please wait for the image upload to finish."
+      );
+
       return;
     }
 
@@ -2019,7 +2024,8 @@ const AdminHero = () => {
                     }
                     disabled={
                       saving ||
-                      resetting
+                      resetting ||
+                      imageUploading
                     }
                     className="admin-hero-hidden-file-input"
                   />
@@ -2342,7 +2348,7 @@ const AdminHero = () => {
                     <span>
                       {
                         videoValidationLoading
-                          ? "Checking Video..."
+                          ? "Uploading Video..."
                           : "Choose Hero Video"
                       }
                     </span>

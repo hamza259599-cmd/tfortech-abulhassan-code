@@ -57,6 +57,24 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
 )
 
 
+# Cloudinary settings
+# The API secret must only ever be set on the backend.
+CLOUDINARY_CLOUD_NAME = os.getenv(
+    "CLOUDINARY_CLOUD_NAME",
+    "",
+)
+
+CLOUDINARY_API_KEY = os.getenv(
+    "CLOUDINARY_API_KEY",
+    "",
+)
+
+CLOUDINARY_API_SECRET = os.getenv(
+    "CLOUDINARY_API_SECRET",
+    "",
+)
+
+
 # Frontend settings
 # Kept for backward compatibility with existing code.
 FRONTEND_URL = os.getenv(

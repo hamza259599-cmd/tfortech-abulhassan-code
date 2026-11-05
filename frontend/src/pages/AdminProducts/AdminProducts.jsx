@@ -6,6 +6,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../AdminLayout/AdminLayout";
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 
 import "./AdminProducts.css";
 
@@ -101,6 +102,11 @@ function AdminProducts() {
     selectedImageNames,
     setSelectedImageNames,
   ] = useState([]);
+
+  const [
+    uploadingImages,
+    setUploadingImages,
+  ] = useState(false);
 
   // =========================================================
   // AUTHENTICATION FAILURE
@@ -485,56 +491,6 @@ function AdminProducts() {
     };
 
   // =========================================================
-  // FILE TO DATA URL
-  // =========================================================
-
-  const readFileAsDataURL =
-    (file) => {
-      return new Promise(
-        (
-          resolve,
-          reject
-        ) => {
-          const reader =
-            new FileReader();
-
-          reader.onload =
-            () => {
-              if (
-                typeof reader.result !==
-                "string"
-              ) {
-                reject(
-                  new Error(
-                    `Unable to process ${file.name}.`
-                  )
-                );
-
-                return;
-              }
-
-              resolve(
-                reader.result
-              );
-            };
-
-          reader.onerror =
-            () => {
-              reject(
-                new Error(
-                  `Unable to read ${file.name}.`
-                )
-              );
-            };
-
-          reader.readAsDataURL(
-            file
-          );
-        }
-      );
-    };
-
-  // =========================================================
   // MULTIPLE GALLERY IMAGES
   // =========================================================
 
@@ -616,14 +572,26 @@ function AdminProducts() {
       }
 
       try {
-        const encodedImages =
+        setUploadingImages(
+          true
+        );
+
+        const token =
+          getToken();
+
+        const uploadedImages =
           await Promise.all(
             validFiles.map(
               (
                 file
               ) =>
-                readFileAsDataURL(
-                  file
+                uploadToCloudinary(
+                  file,
+                  {
+                    token,
+                    folder:
+                      "products",
+                  }
                 )
             )
           );
@@ -642,7 +610,7 @@ function AdminProducts() {
             const combinedImages =
               [
                 ...existingImages,
-                ...encodedImages,
+                ...uploadedImages,
               ];
 
             return {
@@ -685,9 +653,13 @@ function AdminProducts() {
 
         setError(
           imageError.message ||
-            "Unable to process the selected images."
+            "Unable to upload the selected images."
         );
       } finally {
+        setUploadingImages(
+          false
+        );
+
         event.target.value =
           "";
       }
@@ -2121,7 +2093,8 @@ function AdminProducts() {
                       resetForm
                     }
                     disabled={
-                      saving
+                      saving ||
+                      uploadingImages
                     }
                   >
                     Cancel
@@ -2425,7 +2398,8 @@ function AdminProducts() {
                               handleGalleryImageChange
                             }
                             disabled={
-                              saving
+                              saving ||
+                              uploadingImages
                             }
                             style={{
                               display:
@@ -2439,7 +2413,8 @@ function AdminProducts() {
                               imageInputRef.current?.click()
                             }
                             disabled={
-                              saving
+                              saving ||
+                              uploadingImages
                             }
                             style={{
                               width:
@@ -2470,7 +2445,9 @@ function AdminProducts() {
                                 "14px",
                             }}
                           >
-                            📁 Choose Multiple Images
+                            {uploadingImages
+                              ? "Uploading Images..."
+                              : "📁 Choose Multiple Images"}
                           </button>
 
                           <p
@@ -3164,10 +3141,13 @@ function AdminProducts() {
                       type="submit"
                       className="admin-products-submit-button"
                       disabled={
-                        saving
+                        saving ||
+                        uploadingImages
                       }
                     >
-                      {saving
+                      {uploadingImages
+                        ? "Uploading Images..."
+                        : saving
                         ? "Saving..."
                         : editingProductId
                         ? "Update Product"

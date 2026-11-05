@@ -6,6 +6,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../AdminLayout/AdminLayout";
+import { uploadToCloudinary } from "../../utils/cloudinaryUpload";
 
 import "./AdminBlogging.css";
 
@@ -57,6 +58,9 @@ function AdminBlogging() {
 
   const [imageFileName, setImageFileName] =
     useState("");
+
+  const [uploadingImage, setUploadingImage] =
+    useState(false);
 
   const getToken = useCallback(() => {
     return localStorage.getItem(
@@ -289,7 +293,7 @@ function AdminBlogging() {
     }));
   };
 
-  const handleImageFile = (
+  const handleImageFile = async (
     event
   ) => {
     const file =
@@ -325,36 +329,43 @@ function AdminBlogging() {
       return;
     }
 
-    const reader =
-      new FileReader();
+    setUploadingImage(true);
 
-    reader.onload = () => {
-      const result =
-        reader.result;
-
-      if (
-        typeof result === "string"
-      ) {
-        setFormData(
-          (previous) => ({
-            ...previous,
-            image: result,
-          })
+    try {
+      const imageUrl =
+        await uploadToCloudinary(
+          file,
+          {
+            token: getToken(),
+            folder: "blogs",
+          }
         );
 
-        setImageFileName(
-          file.name
-        );
-      }
-    };
-
-    reader.onerror = () => {
-      setError(
-        "Unable to read the selected image."
+      setFormData(
+        (previous) => ({
+          ...previous,
+          image: imageUrl,
+        })
       );
-    };
 
-    reader.readAsDataURL(file);
+      setImageFileName(
+        file.name
+      );
+    } catch (uploadError) {
+      console.error(
+        "Blog image upload error:",
+        uploadError
+      );
+
+      setError(
+        uploadError.message ||
+          "Unable to upload the selected image."
+      );
+    } finally {
+      setUploadingImage(false);
+
+      event.target.value = "";
+    }
   };
 
   const resetImageInput = () => {
@@ -1090,7 +1101,9 @@ function AdminBlogging() {
                     htmlFor="blog-image-file"
                     className="admin-blogging-file-button"
                   >
-                    Choose Image
+                    {uploadingImage
+                      ? "Uploading Image..."
+                      : "Choose Image"}
                   </label>
 
                   <input
@@ -1101,7 +1114,8 @@ function AdminBlogging() {
                       handleImageFile
                     }
                     disabled={
-                      saving
+                      saving ||
+                      uploadingImage
                     }
                   />
 
@@ -1183,7 +1197,8 @@ function AdminBlogging() {
                 type="submit"
                 className="admin-blogging-save-button"
                 disabled={
-                  saving
+                  saving ||
+                  uploadingImage
                 }
               >
                 {saving
