@@ -2,7 +2,7 @@ import React, {
   useEffect,
   useRef,
   useState,
-} from "react";
+} from "react";h
 import { useNavigate } from "react-router-dom";
 
 import AdminLayout from "../AdminLayout/AdminLayout";
@@ -16,7 +16,7 @@ const API_URL = (
 ).replace(/\/+$/, "");
 
 const MAX_IMAGE_SIZE =
-  5 * 1024 * 1024;
+20 * 1024 * 1024;
 
 const EMPTY_FORM = {
   name: "",
@@ -538,7 +538,7 @@ function AdminProducts() {
             MAX_IMAGE_SIZE
           ) {
             invalidMessages.push(
-              `${file.name}: image size must be 5 MB or smaller.`
+              `${file.name}: image size must be 20 MB or smaller.`
             );
 
             return;
@@ -2464,7 +2464,7 @@ function AdminProducts() {
                           >
                             Select multiple images at
                             once. Each image must be
-                            5 MB or smaller.
+                            20 MB or smaller.
                           </p>
 
                           {selectedImageNames.length >
